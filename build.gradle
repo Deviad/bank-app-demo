@@ -1,0 +1,27 @@
+plugins {
+    id("groovy") 
+    id('java')
+    id('idea')
+    id('eclipse')
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral() {
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
+        }
+        maven {
+            url 'https://repo.grails.org/artifactory/core/'
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
+        }
+    }
+}
+
+
