@@ -41,4 +41,4 @@ netty:
     allocator:
       max-order: 3
 jpa.default.properties.hibernate.hbm2ddl.auto: update
-kafka.bootstrap.servers: localhost:9092
+kafka.bootstrap.servers: ${CUSTOM_KAFKA_URL:`localhost:9092`}

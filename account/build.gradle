@@ -40,7 +40,7 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("com.h2database:h2")
     testAnnotationProcessor("io.micronaut.jaxrs:micronaut-jaxrs-processor")
-    compileOnly("org.graalvm.nativeimage:svm")
+//    compileOnly("org.graalvm.nativeimage:svm")
 
     implementation("io.micronaut:micronaut-validation")
 
@@ -62,7 +62,7 @@ tasks {
         }
     }
 }
-graalvmNative.toolchainDetection = false
+//graalvmNative.toolchainDetection = false
 micronaut {
     runtime("netty")
     testRuntime("spock2")
@@ -73,11 +73,11 @@ micronaut {
     aot {
         version = '1.0.0-M7'
         optimizeServiceLoading = true
-        convertYamlToJava = true
+        convertYamlToJava = false
         precomputeOperations = true
-        cacheEnvironment = true
+        cacheEnvironment = false
         optimizeClassLoading = true
-        deduceEnvironment = true
+        deduceEnvironment = false
     }
 }
 

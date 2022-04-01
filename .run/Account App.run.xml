@@ -10,6 +10,9 @@
     <option name="shortenCommandLine" value="NONE" />
     <option name="vmParameters" value="" />
     <option name="workingDirectory" value="" />
+    <envs>
+      <env name="CUSTOM_KAFKA_URL1" value="kafka:9092" />
+    </envs>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
