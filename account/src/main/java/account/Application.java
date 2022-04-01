@@ -9,7 +9,7 @@ import org.h2.tools.Server;
 
 @OpenAPIDefinition(
     info = @Info(
-            title = "bankapp",
+            title = "account",
             version = "0.0"
     )
 )

@@ -1,0 +1,13 @@
+package account.application.dto;
+
+import javax.validation.constraints.NotBlank;
+
+import io.micronaut.core.annotation.Introspected;
+import lombok.Value;
+
+@Value
+@Introspected
+public class AccountDeleteCommand {
+    @NotBlank
+    String accountId;
+}

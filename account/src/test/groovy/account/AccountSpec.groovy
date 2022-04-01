@@ -4,10 +4,9 @@ import io.micronaut.runtime.EmbeddedApplication
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.Specification
 import jakarta.inject.Inject
-import spock.util.concurrent.BlockingVariable
 
 @MicronautTest
-class BankappSpec extends Specification {
+class AccountSpec extends Specification {
 
     @Inject
     EmbeddedApplication<?> application
