@@ -1,9 +1,7 @@
 package account.application.service;
 
 import account.domain.event.Event;
-import io.micronaut.retry.annotation.Retryable;
-import io.micronaut.scheduling.annotation.Async;
-import io.micronaut.transaction.annotation.TransactionalEventListener;
+import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SMSSender {
 
-    @Async
-    @TransactionalEventListener
-    @Retryable
+    @EventListener
     void onNewEvent(Event event) {
 
         if (event.status() != Event.Status.COMPLETED) {

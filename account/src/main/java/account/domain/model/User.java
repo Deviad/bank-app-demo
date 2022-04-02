@@ -1,6 +1,7 @@
 package account.domain.model;
 
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -14,6 +15,9 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -41,6 +45,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Account> accounts = new ArrayList<>();
 
     @Embedded

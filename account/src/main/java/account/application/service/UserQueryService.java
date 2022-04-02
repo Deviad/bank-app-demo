@@ -1,9 +1,11 @@
 package account.application.service;
 
+import java.util.Optional;
+
+import account.application.adapter.AccountAdapter;
+import account.application.adapter.UserAdapter;
+import account.application.dto.UserResponse;
 import account.domain.UserRepository;
-import account.domain.model.User;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.retry.annotation.Retryable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -19,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 public class UserQueryService {
 
     UserRepository userRepository;
+    UserAdapter userAdapter;
+    AccountAdapter accountAdapter;
 
     /*
         For this demo app I focused on reliability.
@@ -27,9 +31,16 @@ public class UserQueryService {
      */
 
     @Retryable
-    public User getUser(String userId) {
+    public Optional<UserResponse> getUser(String userId) {
 
-       return  userRepository.findById(userId).orElseThrow();
+        return userRepository.findById(userId).map(u -> userAdapter.mapToUserResponse(u, accountAdapter.mapListToAccountResponses(u.getAccounts())));
+    }
+
+    @Retryable
+    public Optional<UserResponse> getUserWithAccounts(String username) {
+
+        return userRepository.getUserWithAccountsByUsername(username)
+                .map(u -> userAdapter.mapToUserResponse(u, accountAdapter.mapListToAccountResponses(u.getAccounts())));
 
     }
 

@@ -1,4 +1,4 @@
-package account.application.web
+package account.application.service
 
 import account.application.dto.AddressDto
 import account.application.dto.UserCreateCommand
@@ -9,6 +9,7 @@ import account.application.service.AccountQueryService
 import account.application.service.UserFacade
 import account.application.service.UserQueryService
 import account.domain.AccountRepository
+import account.domain.UserRepository
 import account.domain.model.AccountType
 import groovy.util.logging.Slf4j
 import io.micronaut.configuration.kafka.annotation.KafkaClient
@@ -35,6 +36,7 @@ import org.testcontainers.utility.DockerImageName
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.util.concurrent.PollingConditions
 
 import java.util.concurrent.ExecutionException
@@ -43,7 +45,8 @@ import java.util.concurrent.TimeUnit
 import static io.micronaut.configuration.kafka.annotation.KafkaClient.Acknowledge.ALL
 import static io.micronaut.configuration.kafka.config.AbstractKafkaConfiguration.EMBEDDED_TOPICS
 
-class AccountControllerTest extends Specification {
+@Stepwise
+class UserFacadeTest extends Specification {
     static KafkaContainer container = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka"));
     {
         container.start()
@@ -53,6 +56,7 @@ class AccountControllerTest extends Specification {
     @Shared
     @AutoCleanup
     EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+            "micronaut.server.port": SocketUtils.findAvailableTcpPort(),
             'spec.name'              : "AccountControllerTest",
             'kafka.bootstrap.servers': container.bootstrapServers,
             (EMBEDDED_TOPICS): ['transaction-completed', 'transaction-started']
@@ -69,8 +73,11 @@ class AccountControllerTest extends Specification {
     def accountQueryService = embeddedServer.applicationContext.getBean(AccountQueryService)
     def transactionCompletedClient = embeddedServer.applicationContext.getBean(TransactionCompletedClient)
     def tc = embeddedServer.applicationContext.getBean(KafkaTopicCreator)
+    def ur = embeddedServer.applicationContext.getBean(UserRepository)
 
-
+    def cleanup() {
+        ur.deleteAll()
+    }
 
     void cleanupSpec() {
         container.stop()
@@ -82,23 +89,23 @@ class AccountControllerTest extends Specification {
 
     }
 
-    void "test createAccount with deposit"() {
+    void "test createAccount with deposit complete flow"() {
         given:
-        userFacade.addUser(new UserCreateCommand("Davide", "test", "test", "test",
+        userFacade.addUser(new UserCreateCommand("Davide1", "test1", "test1", "test1",
                 new AddressDto("test", "test", "test", "test"),
                 AccountType.JUNIOR,
                 TransactionType.DEPOSIT,
                 100.00d))
         sleep(1000)
         when:
-        def initialAccounts = accountQueryService.getAccountsByUsername("test")
+        def initialAccounts = accountQueryService.getAccountsByUsername("test1")
         def message = new TransactionCompletedRequestMessage(100d, initialAccounts[0].id)
 //        transactionCompletedClient.sendNotification(initialAccounts[0].id, message)
         completedTransactionListener.updateBalance(initialAccounts[0].id, message)
         then:
         PollingConditions conditions = new PollingConditions(timeout: 30, delay: 1)
         conditions.eventually {
-            def finalAccounts = accountQueryService.getAccountsByUsername("test")
+            def finalAccounts = accountQueryService.getAccountsByUsername("test1")
             finalAccounts[0].accountBalance == 100d
         }
     }

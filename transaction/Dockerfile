@@ -3,7 +3,7 @@ RUN set -x \
     mkdir -p /compile
 COPY ./ /compile
 WORKDIR /compile
-RUN ./gradlew clean build
+RUN ./gradlew clean build -x test
 
 FROM amazoncorretto:11
 RUN set -x \

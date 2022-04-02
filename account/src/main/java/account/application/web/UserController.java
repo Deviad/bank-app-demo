@@ -2,8 +2,11 @@ package account.application.web;
 
 import javax.validation.Valid;
 
+import java.util.Optional;
+
 import account.application.dto.UserCreateCommand;
 import account.application.dto.UserDeleteCommand;
+import account.application.dto.UserResponse;
 import account.application.service.UserFacade;
 import account.application.service.UserQueryService;
 import io.micronaut.http.annotation.Body;
@@ -28,8 +31,15 @@ public class UserController {
     @Get("/{userId}")
     @ApiResponse(responseCode = "404", description = "Customer not found")
     @Tag(name = "user")
-    public void getUser(@PathVariable String userId) {
-        queryService.getUser(userId);
+    public Optional<UserResponse> getUser(@PathVariable String userId) {
+        return queryService.getUser(userId);
+    }
+
+    @Get("/username/{username}")
+    @ApiResponse(responseCode = "404", description = "Customer not found")
+    @Tag(name = "user")
+    public Optional<UserResponse> getByUsername(@PathVariable String username) {
+      return queryService.getUserWithAccounts(username);
     }
 
     @Post

@@ -16,7 +16,7 @@ public class H2ServerStarter {
     @SneakyThrows
     @EventListener
     void setup(ApplicationStartupEvent event) {
-        Server.createWebServer("-webPort", "8083").start();
+        Server.createWebServer("-webAllowOthers", "-webPort", "8083").start();
     }
 
 }

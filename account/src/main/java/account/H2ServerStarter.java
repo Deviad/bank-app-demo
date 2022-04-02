@@ -16,7 +16,7 @@ public class H2ServerStarter {
     @SneakyThrows
     @EventListener
     void setup(ApplicationStartupEvent event) {
-        Server.createWebServer().start();
+        Server.createWebServer("-webAllowOthers").start();
     }
 
 }

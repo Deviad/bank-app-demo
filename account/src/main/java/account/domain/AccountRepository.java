@@ -1,5 +1,7 @@
 package account.domain;
 
+import java.util.Optional;
+
 import account.domain.model.Account;
 import account.domain.model.User;
 import io.micronaut.data.annotation.Query;
@@ -11,9 +13,9 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
 
         @Query("select u from User u left join fetch u.accounts where u.id = :userId")
-        User getUserwithAccountsByUserId(String userId);
+        Optional<User> getUserwithAccountsByUserId(String userId);
 
         @Query("select u from User u left join fetch u.accounts where u.username = :username")
-        User getUserWithAccountsByUsername(String username);
+        Optional<User> getUserWithAccountsByUsername(String username);
 
 }

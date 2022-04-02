@@ -1,7 +1,9 @@
 package account.application.web
 
 import account.TestSuiteSpecification
+import account.domain.UserRepository
 import io.micronaut.context.ApplicationContext
+import io.micronaut.core.io.socket.SocketUtils
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
@@ -26,6 +28,7 @@ class UserControllerTest extends TestSuiteSpecification {
     @Shared
     @AutoCleanup
     EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+            "micronaut.server.port": SocketUtils.findAvailableTcpPort(),
             'spec.name'              : "UserControllerTest",
             'kafka.bootstrap.servers': container.bootstrapServers,
 
@@ -34,6 +37,12 @@ class UserControllerTest extends TestSuiteSpecification {
     @Shared
     @AutoCleanup
     HttpClient rxClient = embeddedServer.applicationContext.createBean(HttpClient, embeddedServer.URL)
+
+    def ur = embeddedServer.applicationContext.getBean(UserRepository)
+
+    def cleanup() {
+        ur.deleteAll()
+    }
 
 
     void cleanupSpec() {
@@ -65,7 +74,6 @@ class UserControllerTest extends TestSuiteSpecification {
                 .exchange(HttpRequest.POST('/user', payload)
                         .contentType(MediaType.APPLICATION_JSON), String))
                 .blockFirst()
-        // TODO implement stimulus
         then:
         resp.getStatus() == HttpStatus.OK
 

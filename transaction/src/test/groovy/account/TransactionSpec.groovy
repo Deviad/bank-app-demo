@@ -1,19 +1,24 @@
 package account
 
-import io.micronaut.runtime.EmbeddedApplication
-import io.micronaut.test.extensions.spock.annotation.MicronautTest
+import io.micronaut.context.ApplicationContext
+import io.micronaut.core.io.socket.SocketUtils
+import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.Specification
-import jakarta.inject.Inject
 
-@MicronautTest
 class TransactionSpec extends Specification {
 
-    @Inject
-    EmbeddedApplication<?> application
+    def "runs without errors"() {
+        given:
 
-    void 'test it works'() {
-        expect:
-        application.running
+        EmbeddedServer embeddedServer = ApplicationContext.builder()
+        .properties(["micronaut.server.port": SocketUtils.findAvailableTcpPort()])
+        .run(EmbeddedServer)
+
+        when:
+        embeddedServer.start()
+        then:
+        noExceptionThrown()
+        embeddedServer.stop()
     }
 
 }

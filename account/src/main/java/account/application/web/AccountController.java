@@ -3,8 +3,11 @@ package account.application.web;
 import javax.validation.Valid;
 import javax.ws.rs.HeaderParam;
 
+import java.util.List;
+
 import account.application.dto.AccountCreateCommand;
 import account.application.dto.AccountDeleteCommand;
+import account.application.dto.AccountResponse;
 import account.application.service.AccountFacade;
 import account.application.service.AccountQueryService;
 import io.micronaut.http.annotation.Body;
@@ -44,11 +47,6 @@ public class AccountController {
         queryService.getAccount(accountId, userId);
     }
 
-    @Get
-    @Tag(name = "account")
-    public void getAllAccounts(@HeaderParam("userId") String userId) {
-        queryService.getAccounts(userId);
-    }
 
     @Post
     @ApiResponse(responseCode = "400", description = "Invalid data supplied")

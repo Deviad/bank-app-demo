@@ -1,10 +1,13 @@
 package account.application.service;
 
+import java.util.Collections;
 import java.util.List;
 
+import account.application.adapter.AccountAdapter;
+import account.application.adapter.UserAdapter;
+import account.application.dto.AccountResponse;
+import account.application.dto.UserResponse;
 import account.domain.AccountRepository;
-import account.domain.UserRepository;
-import account.domain.model.Account;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.retry.annotation.Retryable;
@@ -22,7 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AccountQueryService {
 
     AccountRepository accountRepository;
-    UserRepository userRepository;
+    AccountAdapter accountAdapter;
+    UserAdapter userAdapter;
 
     /*
         For this demo I focused on reliability.
@@ -34,8 +38,8 @@ public class AccountQueryService {
      */
 
     @Retryable(excludes = HttpStatusException.class)
-    public Account getAccount(String accountId,
-                              String userId) {
+    public AccountResponse getAccount(String accountId,
+                                      String userId) {
 
        var acc = accountRepository.findById(accountId).orElseThrow();
 
@@ -44,16 +48,22 @@ public class AccountQueryService {
        if (!acc.getUser().getId().equals(userId)) {
            throw new HttpStatusException(HttpStatus.BAD_REQUEST, "You are not the owner of the account");
        }
-       return acc;
+       return accountAdapter.mapToAccountResponse(acc);
     }
 
     @Retryable
-    public List<Account> getAccounts(String userId) {
-        return accountRepository.getUserwithAccountsByUserId(userId).getAccounts();
+    public List<AccountResponse> getAccounts(String userId) {
+        return accountRepository.getUserwithAccountsByUserId(userId)
+                .map(u -> userAdapter.mapToUserResponse(u, accountAdapter.mapListToAccountResponses(u.getAccounts())))
+                .map(UserResponse::getAccounts)
+                .orElse(Collections.emptyList());
     }
 
     @Retryable
-    public List<Account> getAccountsByUsername(String username) {
-        return accountRepository.getUserWithAccountsByUsername(username).getAccounts();
+    public List<AccountResponse> getAccountsByUsername(String username) {
+        return accountRepository.getUserWithAccountsByUsername(username)
+                .map(u -> userAdapter.mapToUserResponse(u, accountAdapter.mapListToAccountResponses(u.getAccounts())))
+                .map(UserResponse::getAccounts)
+                .orElse(Collections.emptyList());
     }
 }

@@ -1,19 +1,24 @@
 package account
 
+import io.micronaut.context.ApplicationContext
+import io.micronaut.core.io.socket.SocketUtils
+import io.micronaut.runtime.server.EmbeddedServer
+import spock.lang.Stepwise
 
-import io.micronaut.runtime.EmbeddedApplication
-import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import jakarta.inject.Inject
-
-@MicronautTest
+@Stepwise
 class AccountSpec extends TestSuiteSpecification  {
 
-    @Inject
-    EmbeddedApplication<?> application
 
-    void 'test it works'() {
-        expect:
-        application.running
+    def "runs without errors"() {
+        given:
+        EmbeddedServer embeddedServer = ApplicationContext.builder()
+                .properties(["micronaut.server.port": SocketUtils.findAvailableTcpPort()])
+                .run(EmbeddedServer)
+        when:
+        embeddedServer.start()
+        then:
+        noExceptionThrown()
+        embeddedServer.stop()
     }
 
 }
