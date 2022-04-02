@@ -29,14 +29,8 @@ public class UserQueryService {
     @Retryable
     public User getUser(String userId) {
 
-       var user = userRepository.findById(userId).orElseThrow();
+       return  userRepository.findById(userId).orElseThrow();
 
-       //For demo purposes I am passing the userId with header,
-       // in real apps I get it from the JWT token.
-       if (!user.getId().equals(userId)) {
-           throw new HttpStatusException(HttpStatus.BAD_REQUEST, "You are not the owner of this account");
-       }
-       return user;
     }
 
 }

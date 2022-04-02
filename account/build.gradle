@@ -40,10 +40,8 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("com.h2database:h2")
     testAnnotationProcessor("io.micronaut.jaxrs:micronaut-jaxrs-processor")
-//    compileOnly("org.graalvm.nativeimage:svm")
-
     implementation("io.micronaut:micronaut-validation")
-
+    testImplementation("org.testcontainers:kafka")
 }
 
 

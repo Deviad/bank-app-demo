@@ -4,27 +4,30 @@ import java.util.Optional;
 
 import account.domain.AccountRepository;
 import account.domain.model.Account;
+import io.micronaut.configuration.kafka.annotation.KafkaKey;
 import io.micronaut.configuration.kafka.annotation.KafkaListener;
 import io.micronaut.configuration.kafka.annotation.Topic;
+import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
+import io.micronaut.messaging.annotation.MessageBody;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Requires(notEnv = Environment.TEST)
-@KafkaListener
+@KafkaListener(producerClientId = "transactionCompletedClient")
 @Slf4j
 @AllArgsConstructor(onConstructor = @__({@Inject}))
-@Singleton
+@Context
 public class CompletedTransactionListener {
     AccountRepository accountRepository;
 
     @Topic("transaction-completed")
-    public void updateAnalytics(TransactionCompletedRequestMessage transaction) {
+    public void updateBalance(@KafkaKey String accountId,
+                              @MessageBody TransactionCompletedRequestMessage transaction) {
 
-        Optional<Account> account = accountRepository.findById(transaction.getAccountId());
+        Optional<Account> account = accountRepository.findById(accountId);
         if (isNotPresent(account)) {
             log.error("Account {} does not exist", transaction.getAccountId());
             return;

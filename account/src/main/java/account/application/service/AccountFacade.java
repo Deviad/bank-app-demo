@@ -14,6 +14,7 @@ import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @Singleton
 @AllArgsConstructor(onConstructor = @__({@Inject}))
@@ -50,8 +51,8 @@ public class AccountFacade {
             return;
         }
 
-        transactionClient.addTransaction(new TransactionStartedRequestMessage(payload.getInformation().getAmount(),
-                payload.getInformation().getTransactionType(), payload.getAccountId())).block();
+        transactionClient.addTransaction(payload.getAccountId(), new TransactionStartedRequestMessage(payload.getInformation().getAmount(),
+                payload.getInformation().getTransactionType(), payload.getAccountId()));
     }
 
 }

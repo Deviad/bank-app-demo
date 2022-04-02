@@ -1,12 +1,10 @@
 package account.application.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import account.domain.AccountRepository;
 import account.domain.UserRepository;
 import account.domain.model.Account;
-import account.domain.model.User;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.retry.annotation.Retryable;
@@ -29,7 +27,10 @@ public class AccountQueryService {
     /*
         For this demo I focused on reliability.
         Obviously if this was for real I would protect these methods so that
-        information can be retrieved only by the account owners or employees with sufficient permissions
+        information can be retrieved only by the account owners or employees with sufficient permissions.
+
+        Here depending on the circumstances, we may use a Response Dto or a JSonView to hide some data which
+        is not meant to be displayed.
      */
 
     @Retryable(excludes = HttpStatusException.class)
@@ -47,10 +48,12 @@ public class AccountQueryService {
     }
 
     @Retryable
-    public List<List<Account>> getAccounts(String userId) {
-        return userRepository.findById(userId)
-                .stream()
-                .map(User::getAccounts)
-                .collect(Collectors.toList());
+    public List<Account> getAccounts(String userId) {
+        return accountRepository.getUserwithAccountsByUserId(userId).getAccounts();
+    }
+
+    @Retryable
+    public List<Account> getAccountsByUsername(String username) {
+        return accountRepository.getUserWithAccountsByUsername(username).getAccounts();
     }
 }

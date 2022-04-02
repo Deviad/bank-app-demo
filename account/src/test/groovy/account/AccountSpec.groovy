@@ -1,12 +1,12 @@
 package account
 
+
 import io.micronaut.runtime.EmbeddedApplication
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import spock.lang.Specification
 import jakarta.inject.Inject
 
 @MicronautTest
-class AccountSpec extends Specification {
+class AccountSpec extends TestSuiteSpecification  {
 
     @Inject
     EmbeddedApplication<?> application

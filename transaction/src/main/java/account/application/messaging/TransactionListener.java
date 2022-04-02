@@ -5,16 +5,18 @@ import java.util.UUID;
 
 import account.domain.model.Transaction;
 import account.domain.service.TransactionService;
+import io.micronaut.configuration.kafka.annotation.KafkaKey;
 import io.micronaut.configuration.kafka.annotation.KafkaListener;
 import io.micronaut.configuration.kafka.annotation.Topic;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
+import io.micronaut.messaging.annotation.MessageBody;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 
 @Requires(notEnv = Environment.TEST)
-@KafkaListener
+@KafkaListener(producerClientId = "transactionStartedClient")
 @AllArgsConstructor(onConstructor = @__({@Inject}))
 @Singleton
 public class TransactionListener {
@@ -22,7 +24,7 @@ public class TransactionListener {
     TransactionCompletedClient completedTransactionClient;
 
     @Topic("transaction-started")
-    public void processTransaction(TransactionStartedRequestMessage request) {
+    public void processTransaction(@KafkaKey String accountId, @MessageBody TransactionStartedRequestMessage request) {
         Transaction transaction = new Transaction()
                 .withId(String.format("transaction-%s", UUID.randomUUID()))
                 .withAmount(request.getAmount())
@@ -50,7 +52,7 @@ public class TransactionListener {
                         savedTransaction.getBalance(),
                         savedTransaction.getAccountId());
 
-        completedTransactionClient.sendNotification(completed).block();
+        completedTransactionClient.sendNotification(completed.getAccountId(), completed);
 
     }
 }

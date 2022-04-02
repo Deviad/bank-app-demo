@@ -20,8 +20,8 @@ datasources:
     schema-generate: CREATE_DROP
     dialect: H2
 jpa.default.properties.hibernate.hbm2ddl.auto: update
-kafka.bootstrap.servers: localhost:9092
 netty:
   default:
     allocator:
       max-order: 3
+kafka.bootstrap.servers: ${CUSTOM_KAFKA_URL:`localhost:9092`}
